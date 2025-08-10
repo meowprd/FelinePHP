@@ -2,6 +2,9 @@
 
 namespace meowprd\FelinePHP\Http;
 
+use FastRoute\RouteCollector;
+use function FastRoute\simpleDispatcher;
+
 /**
  * Application kernel.
  *
@@ -18,7 +21,20 @@ class Kernel
      */
     public function handle(Request $request): Response
     {
-        $content = 'hello, world!';
-        return new Response($content);
+        $dispatcher = simpleDispatcher(function(RouteCollector $collector) {
+            $collector->get('/', function() {
+                $content = 'hello, world!';
+                return new Response($content);
+            });
+
+            $collector->get('/user/{id}', function(array $vars){
+                $content = "user = {$vars['id']}";
+                return new Response($content);
+            });
+        });
+
+        $routeInfo = $dispatcher->dispatch($request->getMethod(), $request->getPath());
+        [$status, $handler, $vars] = $routeInfo;
+        return $handler($vars);
     }
 }
