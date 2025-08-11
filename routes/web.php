@@ -1,9 +1,8 @@
 <?php
 
+use App\Controllers\IndexController;
 use meowprd\FelinePHP\Http\Response;
 use meowprd\FelinePHP\Routing\Route;
-
-use App\Controllers\IndexController;
 
 return array(
     Route::get('/', array(IndexController::class, "index")),

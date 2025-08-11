@@ -2,8 +2,8 @@
 
 namespace meowprd\FelinePHP\Debug;
 
-use Whoops\Run;
 use Whoops\Handler\PrettyPageHandler;
+use Whoops\Run;
 
 /**
  * Debugger class responsible for registering

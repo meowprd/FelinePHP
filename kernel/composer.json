@@ -1,0 +1,19 @@
+{
+    "name": "meowprd/feline-php",
+    "minimum-stability": "dev",
+    "type": "project",
+    "authors": [
+        {
+            "name": "meowprd"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "meowprd\\FelinePHP\\": "src"
+        }
+    },
+    "require": {
+        "nikic/fast-route": "^1.3",
+        "filp/whoops": "^2.18"
+    }
+}

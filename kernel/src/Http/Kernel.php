@@ -2,10 +2,8 @@
 
 namespace meowprd\FelinePHP\Http;
 
-use FastRoute\RouteCollector;
 use meowprd\FelinePHP\Exceptions\HttpException;
 use meowprd\FelinePHP\Routing\Router;
-use function FastRoute\simpleDispatcher;
 
 /**
  * Application kernel.
