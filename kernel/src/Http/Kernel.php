@@ -2,52 +2,74 @@
 
 namespace meowprd\FelinePHP\Http;
 
+use League\Container\Container;
 use meowprd\FelinePHP\Exceptions\HttpException;
 use meowprd\FelinePHP\Routing\Router;
 
 /**
  * Application kernel.
  *
- * The kernel is responsible for handling an incoming HTTP request
- * and producing an HTTP response.
+ * The Kernel coordinates the handling of incoming HTTP requests
+ * by dispatching them through the router, invoking the matched handler,
+ * and returning an HTTP response.
+ *
+ * It also provides a centralized exception handling mechanism to
+ * convert errors into valid HTTP responses or rethrow them in debug mode.
  */
 readonly class Kernel
 {
     /**
-     * @param Router $router Router instance used for dispatching requests.
+     * Creates a new Kernel instance.
+     *
+     * @param Router    $router    Router instance used for request dispatching.
+     * @param Container $container Dependency injection container for resolving services.
      */
     public function __construct(
-        private readonly Router $router
+        private readonly Router $router,
+        private readonly Container $container
     ) {}
 
     /**
      * Handles an HTTP request and returns a response.
      *
-     * Dispatches the request through the router, invokes the matched handler,
-     * and returns the resulting Response. If an exception occurs, returns
-     * a Response containing the error message and code.
+     * The method delegates routing to the Router, executes the resolved
+     * request handler, and returns its response.
+     * If an exception is thrown, it is passed to {@see Kernel::handleException()}.
      *
      * @param Request $request The HTTP request object.
-     * @return Response The HTTP response object.
-     * @throws \Throwable
+     * @return Response The HTTP response produced by the handler or generated from an exception.
+     * @throws \Throwable Rethrows the original exception when DEBUG mode is enabled.
      */
     public function handle(Request $request): Response
     {
         try {
-            [$handler, $vars] = $this->router->dispatch($request);
+            [$handler, $vars] = $this->router->dispatch($request, $this->container);
             $response = call_user_func_array($handler, $vars);
-        } catch(\Throwable $e) {
+        } catch (\Throwable $e) {
             return $this->handleException($e);
         }
+
         return $response;
     }
 
-    private function handleException(\Throwable $exception): Response {
-        if(defined('DEBUG') && DEBUG) {
+    /**
+     * Handles exceptions and converts them into HTTP responses.
+     *
+     * - In DEBUG mode, the original exception is rethrown.
+     * - If the exception is an HttpException, it delegates handling to {@see HttpException::handle()}.
+     * - Otherwise, it returns a generic response with the exception's message and code.
+     *
+     * @param \Throwable $exception The thrown exception.
+     * @return Response The HTTP response representing the error.
+     * @throws \Throwable If DEBUG mode is enabled, rethrows the exception.
+     */
+    private function handleException(\Throwable $exception): Response
+    {
+        if (defined('DEBUG') && DEBUG) {
             throw $exception;
         }
 
-        if($exception instanceof HttpException) {
+        if ($exception instanceof HttpException) {
             return $exception->handle();
         }
 

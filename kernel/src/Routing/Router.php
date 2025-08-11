@@ -4,62 +4,98 @@ namespace meowprd\FelinePHP\Routing;
 
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
+use League\Container\Container;
 use meowprd\FelinePHP\Exceptions\Http\MethodNotAllowedException;
 use meowprd\FelinePHP\Exceptions\Http\RouteNotFoundException;
 use meowprd\FelinePHP\Http\Request;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use function FastRoute\simpleDispatcher;
 
+/**
+ * Router service for dispatching HTTP requests to their corresponding handlers.
+ *
+ * This class uses FastRoute for routing and integrates with a dependency
+ * injection container to resolve controller instances.
+ */
 class Router
 {
     /**
-     * Dispatch the request to the appropriate route handler.
+     * Dispatches an HTTP request to its associated route handler.
      *
-     * @param Request $request
-     * @return array{0: callable|array, 1: array} [handler, route parameters]
+     * If the resolved handler is specified as an array `[ControllerClass, method]`,
+     * the controller instance is retrieved from the container before invocation.
      *
-     * @throws MethodNotAllowedException If HTTP method not allowed
-     * @throws RouteNotFoundException If route not found
+     * @param Request   $request   The HTTP request object.
+     * @param Container $container The DI container for resolving controllers.
+     *
+     * @return array{0: callable, 1: array} A tuple containing:
+     *     - 0: The resolved handler (callable).
+     *     - 1: An array of extracted route parameters.
+     *
+     * @throws MethodNotAllowedException       If the HTTP method is not allowed for the route.
+     * @throws RouteNotFoundException          If no matching route is found.
+     * @throws ContainerExceptionInterface     If the container fails to resolve a dependency.
+     * @throws NotFoundExceptionInterface      If a required service is not found in the container.
      */
-    public function dispatch(Request $request): array {
+    public function dispatch(Request $request, Container $container): array
+    {
         [$handler, $vars] = $this->extractRouteInfo($request);
-        if(is_array($handler)) {
-            [$controller, $method] = $handler;
+
+        if (is_array($handler)) {
+            [$controllerId, $method] = $handler;
+            $controller = $container->get($controllerId);
             $handler = [new $controller, $method];
         }
-        return array($handler, $vars);
+
+        return [$handler, $vars];
     }
 
     /**
-     * Extract route handler and parameters from the request.
+     * Extracts the route handler and parameters for the given request.
      *
-     * @param Request $request
-     * @return array{0: callable|array, 1: array} [handler, route parameters]
+     * Loads route definitions from:
+     * - `{ROOT_PATH}/routes/web.php`
+     * - `{ROOT_PATH}/routes/api.php` (grouped under the `API_PREFIX`).
      *
-     * @throws MethodNotAllowedException If HTTP method not allowed
-     * @throws RouteNotFoundException If route not found
+     * @param Request $request The HTTP request to match.
+     *
+     * @return array{0: callable|array, 1: array} A tuple containing:
+     *     - 0: The matched route handler (callable or [controller, method] array).
+     *     - 1: An associative array of route parameters.
+     *
+     * @throws MethodNotAllowedException If the HTTP method is not allowed for the matched route.
+     * @throws RouteNotFoundException    If no route matches the given request path.
      */
-    private function extractRouteInfo(Request $request): array {
-        $dispatcher = simpleDispatcher(function(RouteCollector $collector) {
-
+    private function extractRouteInfo(Request $request): array
+    {
+        $dispatcher = simpleDispatcher(function (RouteCollector $collector) {
             $webRoutes = require_once(ROOT_PATH . '/routes/web.php');
             $apiRoutes = require_once(ROOT_PATH . '/routes/api.php');
 
-            foreach ($webRoutes as $webRoute) { $collector->addRoute(...$webRoute); }
-            $collector->addGroup(API_PREFIX, function(RouteCollector $collector) use ($apiRoutes) {
-                foreach ($apiRoutes as $apiRoute) { $collector->addRoute(...$apiRoute); }
+            foreach ($webRoutes as $webRoute) {
+                $collector->addRoute(...$webRoute);
+            }
+
+            $collector->addGroup(API_PREFIX, function (RouteCollector $collector) use ($apiRoutes) {
+                foreach ($apiRoutes as $apiRoute) {
+                    $collector->addRoute(...$apiRoute);
+                }
             });
         });
 
         $routeInfo = $dispatcher->dispatch($request->getMethod(), $request->getPath());
 
-        switch($routeInfo[0]) {
+        switch ($routeInfo[0]) {
             case Dispatcher::FOUND:
-                return array($routeInfo[1], $routeInfo[2]);
+                return [$routeInfo[1], $routeInfo[2]];
+
             case Dispatcher::METHOD_NOT_ALLOWED:
                 $allowedMethods = implode(', ', $routeInfo[1]);
                 throw new MethodNotAllowedException("Supported methods are: $allowedMethods");
-            default:
+
             case Dispatcher::NOT_FOUND:
+            default:
                 throw new RouteNotFoundException("Route not found");
         }
     }
