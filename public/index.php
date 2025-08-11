@@ -1,9 +1,9 @@
 <?php
 
+require_once dirname(__DIR__) . '/vendor/autoload.php';
 require_once dirname(__DIR__) . '/config/app.php';
-require_once ROOT_PATH . '/vendor/autoload.php';
 
-\meowprd\FelinePHP\Debug\WhoopsDebugger::register(DEBUG);
+\meowprd\FelinePHP\Debug\WhoopsDebugger::register($_ENV['DEBUG']);
 $request = \meowprd\FelinePHP\Http\Request::createFromGlobals();
 
 /** @var \League\Container\Container $container */

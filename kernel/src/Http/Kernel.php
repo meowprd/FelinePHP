@@ -65,7 +65,7 @@ readonly class Kernel
      */
     private function handleException(\Throwable $exception): Response
     {
-        if (defined('DEBUG') && DEBUG) {
+        if ($_ENV['DEBUG']) {
             throw $exception;
         }
 
