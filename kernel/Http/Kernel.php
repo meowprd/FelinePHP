@@ -22,14 +22,13 @@ class Kernel
     public function handle(Request $request): Response
     {
         $dispatcher = simpleDispatcher(function(RouteCollector $collector) {
-            $collector->get('/', function() {
-                $content = 'hello, world!';
-                return new Response($content);
-            });
 
-            $collector->get('/user/{id}', function(array $vars){
-                $content = "user = {$vars['id']}";
-                return new Response($content);
+            $webRoutes = require_once(ROOT_PATH . '/routes/web.php');
+            $apiRoutes = require_once(ROOT_PATH . '/routes/api.php');
+
+            foreach ($webRoutes as $webRoute) { $collector->addRoute(...$webRoute); }
+            $collector->addGroup(API_PREFIX, function(RouteCollector $collector) use ($apiRoutes) {
+                foreach ($apiRoutes as $apiRoute) { $collector->addRoute(...$apiRoute); }
             });
         });
 

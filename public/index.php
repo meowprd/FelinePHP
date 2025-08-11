@@ -1,5 +1,6 @@
 <?php
-require_once dirname(__DIR__) . '/vendor/autoload.php';
+require_once dirname(__DIR__) . '/config/app.php';
+require_once ROOT_PATH . '/vendor/autoload.php';
 
 $request = meowprd\FelinePHP\Http\Request::createFromGlobals();
 
