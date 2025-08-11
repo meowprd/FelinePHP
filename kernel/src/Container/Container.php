@@ -9,7 +9,7 @@ use Psr\Container\ContainerInterface;
  * Simple service container implementing PSR-11 ContainerInterface.
  *
  * This container stores service definitions as class names or objects
- * and can instantiate services on demand.
+ * and can instantiate services on demand, resolving dependencies automatically.
  */
 class Container implements ContainerInterface
 {
@@ -43,25 +43,77 @@ class Container implements ContainerInterface
     /**
      * Retrieves the service by its identifier.
      *
-     * Instantiates a new instance of the service if definition is a class name.
-     * If the definition is an object, it returns the object.
+     * Instantiates the service resolving constructor dependencies recursively.
+     * If the service is not registered but class exists, it registers and resolves it automatically.
      *
      * @param string $id Service identifier.
      * @return mixed The resolved service instance.
-     * @throws \Exception If the service is not found or cannot be instantiated.
+     * @throws ContainerException If the service cannot be resolved.
+     * @throws \ReflectionException If reflection fails.
      */
     public function get(string $id): mixed {
         if (!isset($this->services[$id])) {
-            throw new ContainerException("Service '$id' not found");
+            if (!class_exists($id)) {
+                throw new ContainerException("Service '$id' could not be resolved");
+            }
+            $this->add($id);
         }
 
-        $definition = $this->services[$id];
+        $instance = $this->resolve($this->services[$id]);
+        return $instance;
+    }
 
-        if (is_object($definition)) {
-            return $definition;
+    /**
+     * Resolves a class or object by instantiating it with resolved constructor dependencies.
+     *
+     * @param string|object $class Class name or object instance.
+     * @return mixed Instantiated service object.
+     * @throws \ReflectionException If reflection fails.
+     */
+    private function resolve(string|object $class): mixed {
+        if (is_object($class)) {
+            return $class;
         }
 
-        return new $definition();
+        $reflection = new \ReflectionClass($class);
+        $constructor = $reflection->getConstructor();
+
+        if (is_null($constructor)) {
+            return $reflection->newInstance();
+        }
+
+        $constructorParams = $constructor->getParameters();
+        $classDependencies = $this->resolveReflectionDependencies($constructorParams);
+
+        return $reflection->newInstanceArgs($classDependencies);
+    }
+
+    /**
+     * Resolves dependencies for constructor parameters.
+     *
+     * @param \ReflectionParameter[] $constructorParams Array of reflection parameters.
+     * @return array Array of resolved dependencies.
+     * @throws ContainerException If a dependency cannot be resolved.
+     * @throws \ReflectionException If reflection fails.
+     */
+    private function resolveReflectionDependencies(array $constructorParams): array {
+        $dependencies = [];
+        foreach ($constructorParams as $param) {
+            $serviceType = $param->getType();
+
+            if ($serviceType === null) {
+                throw new ContainerException("Unable to resolve untyped parameter \${$param->getName()}");
+            }
+
+            // Support only class types
+            if ($serviceType->isBuiltin()) {
+                throw new ContainerException("Unable to resolve builtin parameter \${$param->getName()}");
+            }
+
+            $dependency = $this->get($serviceType->getName());
+            $dependencies[] = $dependency;
+        }
+        return $dependencies;
     }
 
     /**
