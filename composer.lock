@@ -83,7 +83,7 @@
             "dist": {
                 "type": "path",
                 "url": "kernel",
-                "reference": "3b73be65eb8411a363cbb8301a116b46b78cb5eb"
+                "reference": "3af6079bd0a9d1780e501acc6b11e783bb6aee0c"
             },
             "require": {
                 "filp/whoops": "^2.18",
@@ -92,7 +92,7 @@
             "type": "project",
             "autoload": {
                 "psr-4": {
-                    "meowprd\\FelinePHP\\": "src"
+                    "meowprd\\FelinePHP\\": "src/"
                 }
             },
             "authors": [

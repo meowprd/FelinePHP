@@ -9,11 +9,18 @@
     ],
     "autoload": {
         "psr-4": {
-            "meowprd\\FelinePHP\\": "src"
+            "meowprd\\FelinePHP\\": "src/"
         }
+    },
+    "autoload-dev": {
+        "meowprd\\FelinePHP\\Tests\\": "tests/"
     },
     "require": {
         "nikic/fast-route": "^1.3",
-        "filp/whoops": "^2.18"
+        "filp/whoops": "^2.18",
+        "psr/container": "^2.0@dev"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "11.5.x-dev"
     }
 }
