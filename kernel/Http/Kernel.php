@@ -31,17 +31,28 @@ readonly class Kernel
      *
      * @param Request $request The HTTP request object.
      * @return Response The HTTP response object.
+     * @throws \Throwable
      */
     public function handle(Request $request): Response
     {
         try {
             [$handler, $vars] = $this->router->dispatch($request);
             $response = call_user_func_array($handler, $vars);
-        } catch(HttpException $e) {
-            $response = $e->handle();
         } catch(\Throwable $e) {
-            $response = new Response($e->getMessage(), $e->getCode());
+            return $this->handleException($e);
         }
         return $response;
+    }
+
+    private function handleException(\Throwable $exception): Response {
+        if(defined('DEBUG') && DEBUG) {
+            throw $exception;
+        }
+
+        if($exception instanceof HttpException) {
+            return $exception->handle();
+        }
+
+        return new Response($exception->getMessage(), $exception->getCode());
     }
 }
