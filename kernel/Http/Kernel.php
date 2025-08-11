@@ -3,6 +3,8 @@
 namespace meowprd\FelinePHP\Http;
 
 use FastRoute\RouteCollector;
+use meowprd\FelinePHP\Exceptions\HttpException;
+use meowprd\FelinePHP\Routing\Router;
 use function FastRoute\simpleDispatcher;
 
 /**
@@ -11,29 +13,35 @@ use function FastRoute\simpleDispatcher;
  * The kernel is responsible for handling an incoming HTTP request
  * and producing an HTTP response.
  */
-class Kernel
+readonly class Kernel
 {
     /**
+     * @param Router $router Router instance used for dispatching requests.
+     */
+    public function __construct(
+        private readonly Router $router
+    ) {}
+
+    /**
      * Handles an HTTP request and returns a response.
+     *
+     * Dispatches the request through the router, invokes the matched handler,
+     * and returns the resulting Response. If an exception occurs, returns
+     * a Response containing the error message and code.
      *
      * @param Request $request The HTTP request object.
      * @return Response The HTTP response object.
      */
     public function handle(Request $request): Response
     {
-        $dispatcher = simpleDispatcher(function(RouteCollector $collector) {
-
-            $webRoutes = require_once(ROOT_PATH . '/routes/web.php');
-            $apiRoutes = require_once(ROOT_PATH . '/routes/api.php');
-
-            foreach ($webRoutes as $webRoute) { $collector->addRoute(...$webRoute); }
-            $collector->addGroup(API_PREFIX, function(RouteCollector $collector) use ($apiRoutes) {
-                foreach ($apiRoutes as $apiRoute) { $collector->addRoute(...$apiRoute); }
-            });
-        });
-
-        $routeInfo = $dispatcher->dispatch($request->getMethod(), $request->getPath());
-        [$status, $handler, $vars] = $routeInfo;
-        return $handler($vars);
+        try {
+            [$handler, $vars] = $this->router->dispatch($request);
+            $response = call_user_func_array($handler, $vars);
+        } catch(HttpException $e) {
+            $response = $e->handle();
+        } catch(\Throwable $e) {
+            $response = new Response($e->getMessage(), $e->getCode());
+        }
+        return $response;
     }
 }
