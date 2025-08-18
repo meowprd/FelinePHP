@@ -45,7 +45,9 @@ class Router
         if (is_array($handler)) {
             [$controllerId, $method] = $handler;
             $controller = $container->get($controllerId);
-            $handler = [new $controller, $method];
+            $controller = new $controller();
+            $controller->setContainer($container);
+            $handler = [$controller, $method];
         }
 
         return [$handler, $vars];
