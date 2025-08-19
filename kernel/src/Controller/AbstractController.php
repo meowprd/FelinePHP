@@ -2,6 +2,7 @@
 
 namespace meowprd\FelinePHP\Controller;
 
+use meowprd\FelinePHP\Http\Request;
 use meowprd\FelinePHP\Http\Response;
 use Psr\Container\ContainerInterface;
 use Twig\Environment;
@@ -16,13 +17,21 @@ use Twig\Error\SyntaxError;
  */
 abstract class AbstractController
 {
-    /** @var ContainerInterface|null Dependency injection container instance */
+    /**
+     * @var ContainerInterface|null Dependency injection container instance
+     */
     protected ?ContainerInterface $container = null;
+
+    /**
+     * @var Request|null HTTP request instance
+     */
+    protected ?Request $request = null;
 
     /**
      * Sets the dependency injection container.
      *
      * @param ContainerInterface $container The container instance
+     * @return void
      */
     public function setContainer(ContainerInterface $container): void
     {
@@ -30,16 +39,28 @@ abstract class AbstractController
     }
 
     /**
+     * Sets the HTTP request instance.
+     *
+     * @param Request $request The request instance
+     * @return void
+     */
+    public function setRequest(Request $request): void
+    {
+        $this->request = $request;
+    }
+
+    /**
      * Renders a view template and returns a Response object.
      *
-     * @param string $view Template path
-     * @param array $params Template parameters
-     * @param Response|null $response Optional response object to modify
-     * @return Response
+     * @param string $view Template path relative to templates directory
+     * @param array<string, mixed> $params Template parameters (key-value pairs)
+     * @param Response|null $response Optional response object to modify instead of creating new one
+     * @return Response Response object with rendered content
      * @throws LoaderError When the template cannot be found
      * @throws RuntimeError When an error occurred during rendering
      * @throws SyntaxError When template syntax is invalid
      * @throws \Psr\Container\ContainerExceptionInterface If the Twig service cannot be retrieved
+     * @throws \RuntimeException When container has not been set
      */
     public function render(string $view, array $params = [], ?Response $response = null): Response
     {

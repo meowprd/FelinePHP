@@ -5,6 +5,7 @@ namespace meowprd\FelinePHP\Routing;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
 use League\Container\Container;
+use meowprd\FelinePHP\Controller\AbstractController;
 use meowprd\FelinePHP\Exceptions\Http\MethodNotAllowedException;
 use meowprd\FelinePHP\Exceptions\Http\RouteNotFoundException;
 use meowprd\FelinePHP\Http\Request;
@@ -45,8 +46,10 @@ class Router
         if (is_array($handler)) {
             [$controllerId, $method] = $handler;
             $controller = $container->get($controllerId);
+            /** @var AbstractController $controller */
             $controller = new $controller();
             $controller->setContainer($container);
+            $controller->setRequest($request);
             $handler = [$controller, $method];
         }
 
