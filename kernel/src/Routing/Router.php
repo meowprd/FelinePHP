@@ -46,10 +46,10 @@ class Router
         if (is_array($handler)) {
             [$controllerId, $method] = $handler;
             $controller = $container->get($controllerId);
-            /** @var AbstractController $controller */
-            $controller = new $controller();
-            $controller->setContainer($container);
-            $controller->setRequest($request);
+            if(is_subclass_of($controller, AbstractController::class)) {
+                $controller->setContainer($container);
+                $controller->setRequest($request);
+            }
             $handler = [$controller, $method];
         }
 
