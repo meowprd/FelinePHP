@@ -2,7 +2,9 @@
 namespace meowprd\FelinePHP\Console\Commands;
 
 define('STUB_FILE', dirname(__FILE__) . '/stubs/migration.stub.php');
-define('MIGRATIONS_PATH', ROOT_PATH . '/database/migrations');
+if(!defined("MIGRATIONS_PATH")) {
+    define('MIGRATIONS_PATH', ROOT_PATH . '/database/migrations');
+}
 use meowprd\FelinePHP\Console\Colors;
 use meowprd\FelinePHP\Console\CommandInterface;
 use meowprd\FelinePHP\Exceptions\ContainerException;
