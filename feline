@@ -1,0 +1,11 @@
+#!/usr/bin/env php
+<?php
+require_once dirname(__FILE__) . '/vendor/autoload.php';
+require_once dirname(__FILE__) . '/config/app.php';
+
+/** @var \League\Container\Container $container */
+$container = require ROOT_PATH . '/config/services.php';
+$kernel = $container->get(\meowprd\FelinePHP\Console\Kernel::class);
+$status = $kernel->handle();
+echo(\meowprd\FelinePHP\Console\Colors::BG_WHITE . \meowprd\FelinePHP\Console\Colors::LIGHT_PURPLE . "Exiting with status: $status" . \meowprd\FelinePHP\Console\Colors::RESET . PHP_EOL);
+exit($status);

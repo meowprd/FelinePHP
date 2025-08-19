@@ -1,7 +1,7 @@
 <?php
 
 $container = new League\Container\Container();
-$container->delegate(new \League\Container\ReflectionContainer());
+$container->delegate(new \League\Container\ReflectionContainer(true));
 
 $servicesFiles = glob(ROOT_PATH . '/config/services/*.php');
 foreach ($servicesFiles as $serviceFile) {
