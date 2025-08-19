@@ -7,8 +7,8 @@ use meowprd\FelinePHP\Console\CommandInterface;
 use meowprd\FelinePHP\Exceptions\ConsoleException;
 
 // Define constants if not already defined
-if (!defined('STUB_FILE')) {
-    define('STUB_FILE', dirname(__FILE__) . '/stubs/migration.stub.php');
+if (!defined('MIGRATION_STUB_FILE')) {
+    define('MIGRATION_STUB_FILE', dirname(__FILE__) . '/stubs/migration.stub.php');
 }
 
 if (!defined('MIGRATIONS_PATH')) {
@@ -83,13 +83,13 @@ final class MakeMigrationCommand implements CommandInterface
     {
         $path = MIGRATIONS_PATH . '/' . $fileName;
 
-        if (!file_exists(STUB_FILE)) {
-            throw new ConsoleException('Migration stub file not found: ' . STUB_FILE);
+        if (!file_exists(MIGRATION_STUB_FILE)) {
+            throw new ConsoleException('Migration stub file not found: ' . MIGRATION_STUB_FILE);
         }
 
-        $stub = file_get_contents(STUB_FILE);
+        $stub = file_get_contents(MIGRATION_STUB_FILE);
         if ($stub === false) {
-            throw new ConsoleException('Could not read stub file: ' . STUB_FILE);
+            throw new ConsoleException('Could not read stub file: ' . MIGRATION_STUB_FILE);
         }
 
         if(!is_dir(MIGRATIONS_PATH)) {
