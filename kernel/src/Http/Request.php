@@ -12,6 +12,9 @@ namespace meowprd\FelinePHP\Http;
  */
 readonly class Request
 {
+    /** @var Session $session */
+    private Session $session;
+
     /**
      * @param array<string, mixed> $get     HTTP GET parameters (usually from $_GET)
      * @param array<string, mixed> $post    HTTP POST parameters (usually from $_POST)
@@ -140,5 +143,32 @@ readonly class Request
             }
         }
         return $headers;
+    }
+
+    /**
+     * Set the session instance.
+     *
+     * @param Session $session Session instance to set
+     * @return self Returns instance for method chaining
+     */
+    public function setSession(Session $session): self
+    {
+        $this->session = $session;
+        return $this;
+    }
+
+    /**
+     * Get the session instance.
+     *
+     * @return Session Current session instance
+     * @throws \RuntimeException If session has not been set
+     */
+    public function session(): Session
+    {
+        if ($this->session === null) {
+            throw new \RuntimeException('Session has not been initialized');
+        }
+
+        return $this->session;
     }
 }

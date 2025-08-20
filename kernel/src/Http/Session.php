@@ -10,12 +10,14 @@ namespace meowprd\FelinePHP\Http;
  */
 class Session
 {
+
     /**
-     * Constructor starts the session.
+     * Start a new session
+     * @return self
      */
-    public function __construct()
-    {
+    public function start(): self {
         session_start();
+        return $this;
     }
 
     /**
