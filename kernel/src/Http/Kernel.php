@@ -4,6 +4,7 @@ namespace meowprd\FelinePHP\Http;
 
 use League\Container\Container;
 use meowprd\FelinePHP\Exceptions\HttpException;
+use meowprd\FelinePHP\Http\Middleware\RequestHandlerInterface;
 use meowprd\FelinePHP\Routing\Router;
 
 /**
@@ -21,12 +22,10 @@ readonly class Kernel
     /**
      * Creates a new Kernel instance.
      *
-     * @param Router    $router    Router instance used for request dispatching.
-     * @param Container $container Dependency injection container for resolving services.
+     * @param RequestHandlerInterface $requestHandler Middlewares runner
      */
     public function __construct(
-        private readonly Router $router,
-        private readonly Container $container
+        private readonly RequestHandlerInterface $requestHandler,
     ) {}
 
     /**
@@ -43,8 +42,7 @@ readonly class Kernel
     public function handle(Request $request): Response
     {
         try {
-            [$handler, $vars] = $this->router->dispatch($request, $this->container);
-            $response = call_user_func_array($handler, $vars);
+            $response = $this->requestHandler->handle($request);
         } catch (\Throwable $e) {
             return $this->handleException($e);
         }
