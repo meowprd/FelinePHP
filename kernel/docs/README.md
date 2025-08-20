@@ -36,8 +36,17 @@
 | [*Kernel*](#Kernel) | Application kernel. |
 | [**Kernel**::__construct](#Kernel__construct) | Creates a new Kernel instance. |
 | [**Kernel**::handle](#Kernelhandle) | Handles an HTTP request and returns a response. |
+| [*MakeControllerCommand*](#MakeControllerCommand) |  |
+| [**MakeControllerCommand**::__construct](#MakeControllerCommand__construct) |  |
+| [**MakeControllerCommand**::execute](#MakeControllerCommandexecute) | Execute the command. |
+| [*MakeEntityCommand*](#MakeEntityCommand) |  |
+| [**MakeEntityCommand**::__construct](#MakeEntityCommand__construct) |  |
+| [**MakeEntityCommand**::execute](#MakeEntityCommandexecute) | Execute the command. |
 | [*MakeMigrationCommand*](#MakeMigrationCommand) | Command to create new database migrations. |
 | [**MakeMigrationCommand**::execute](#MakeMigrationCommandexecute) | Execute the migration creation command. |
+| [*MakeRepositoryCommand*](#MakeRepositoryCommand) |  |
+| [**MakeRepositoryCommand**::__construct](#MakeRepositoryCommand__construct) |  |
+| [**MakeRepositoryCommand**::execute](#MakeRepositoryCommandexecute) | Execute the command. |
 | [*MethodNotAllowedException*](#MethodNotAllowedException) | Exception thrown when the HTTP method used in the requestis not allowed for the targeted route. |
 | [**MethodNotAllowedException**::handle](#MethodNotAllowedExceptionhandle) | Handles the exception by returning an HTTP 405 response. |
 | [*Request*](#Request) | Immutable HTTP request object. |
@@ -178,7 +187,7 @@ This container stores service definitions as class names or objects
 and can instantiate services on demand, resolving dependencies automatically.
 
 * Full name: `\meowprd\FelinePHP\Container\Container`
-* This class implements: \Psr\Container\ContainerInterface
+* This class implements: `\Psr\Container\ContainerInterface`
 
 
 ### Container::add
@@ -269,7 +278,7 @@ when errors occur during dependency resolution or container operations.
 
 * Full name: `\meowprd\FelinePHP\Exceptions\ContainerException`
 * Parent class: ``
-* This class implements: \Psr\Container\ContainerExceptionInterface
+* This class implements: `\Psr\Container\ContainerExceptionInterface`
 
 
 ### ContainerException::__construct
@@ -307,7 +316,7 @@ This command drops all database tables and re-runs all migrations,
 effectively resetting the database to a fresh state.
 
 * Full name: `\meowprd\FelinePHP\Console\Commands\DatabaseFreshCommand`
-* This class implements: \meowprd\FelinePHP\Console\CommandInterface
+* This class implements: `\meowprd\FelinePHP\Console\CommandInterface`
 
 
 ### DatabaseFreshCommand::__construct
@@ -368,7 +377,7 @@ Database migration command handler.
 This command applies pending database migrations.
 
 * Full name: `\meowprd\FelinePHP\Console\Commands\DatabaseMigrateCommand`
-* This class implements: \meowprd\FelinePHP\Console\CommandInterface
+* This class implements: `\meowprd\FelinePHP\Console\CommandInterface`
 
 
 ### DatabaseMigrateCommand::__construct
@@ -428,7 +437,7 @@ Database rollback command handler.
 This command rolls back the most recently applied migration.
 
 * Full name: `\meowprd\FelinePHP\Console\Commands\DatabaseRollbackCommand`
-* This class implements: \meowprd\FelinePHP\Console\CommandInterface
+* This class implements: `\meowprd\FelinePHP\Console\CommandInterface`
 
 
 ### DatabaseRollbackCommand::__construct
@@ -488,7 +497,7 @@ Database wipe command handler.
 This command drops all tables from the database while handling foreign key constraints.
 
 * Full name: `\meowprd\FelinePHP\Console\Commands\DatabaseWipeCommand`
-* This class implements: \meowprd\FelinePHP\Console\CommandInterface
+* This class implements: `\meowprd\FelinePHP\Console\CommandInterface`
 
 
 ### DatabaseWipeCommand::__construct
@@ -692,6 +701,114 @@ The HTTP response produced by the handler or generated from an exception.
 
 
 ---
+## MakeControllerCommand
+
+
+
+
+
+* Full name: `\meowprd\FelinePHP\Console\Commands\MakeControllerCommand`
+* This class implements: `\meowprd\FelinePHP\Console\CommandInterface`
+
+
+### MakeControllerCommand::__construct
+
+
+
+```php
+MakeControllerCommand::__construct(  ): mixed
+```
+
+
+
+
+
+**Return Value:**
+
+
+
+
+
+---
+### MakeControllerCommand::execute
+
+Execute the command.
+
+```php
+MakeControllerCommand::execute( array params = [] ): int
+```
+
+
+
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `params` | **array** | Command parameters |
+
+
+**Return Value:**
+
+Exit code (0 on success)
+
+
+
+---
+## MakeEntityCommand
+
+
+
+
+
+* Full name: `\meowprd\FelinePHP\Console\Commands\MakeEntityCommand`
+* This class implements: `\meowprd\FelinePHP\Console\CommandInterface`
+
+
+### MakeEntityCommand::__construct
+
+
+
+```php
+MakeEntityCommand::__construct(  ): mixed
+```
+
+
+
+
+
+**Return Value:**
+
+
+
+
+
+---
+### MakeEntityCommand::execute
+
+Execute the command.
+
+```php
+MakeEntityCommand::execute( array params = [] ): int
+```
+
+
+
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `params` | **array** | Command parameters |
+
+
+**Return Value:**
+
+Exit code (0 on success)
+
+
+
+---
 ## MakeMigrationCommand
 
 Command to create new database migrations.
@@ -699,7 +816,7 @@ Command to create new database migrations.
 This command generates new migration files using a stub template.
 
 * Full name: `\meowprd\FelinePHP\Console\Commands\MakeMigrationCommand`
-* This class implements: \meowprd\FelinePHP\Console\CommandInterface
+* This class implements: `\meowprd\FelinePHP\Console\CommandInterface`
 
 
 ### MakeMigrationCommand::execute
@@ -718,6 +835,60 @@ MakeMigrationCommand::execute( array params = [] ): int
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `params` | **array** | Command parameters (requires &#039;name&#039; parameter) |
+
+
+**Return Value:**
+
+Exit code (0 on success)
+
+
+
+---
+## MakeRepositoryCommand
+
+
+
+
+
+* Full name: `\meowprd\FelinePHP\Console\Commands\MakeRepositoryCommand`
+* This class implements: `\meowprd\FelinePHP\Console\CommandInterface`
+
+
+### MakeRepositoryCommand::__construct
+
+
+
+```php
+MakeRepositoryCommand::__construct(  ): mixed
+```
+
+
+
+
+
+**Return Value:**
+
+
+
+
+
+---
+### MakeRepositoryCommand::execute
+
+Execute the command.
+
+```php
+MakeRepositoryCommand::execute( array params = [] ): int
+```
+
+
+
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `params` | **array** | Command parameters |
 
 
 **Return Value:**

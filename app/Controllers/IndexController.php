@@ -17,6 +17,7 @@ class IndexController extends AbstractController
         $user = new User('tester');
         $user->setPasswordWithoutTouch('123456');
         $this->userRepository->save($user);
+        dd($user);
         return new Response('User created');
     }
 
