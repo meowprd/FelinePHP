@@ -1,9 +1,10 @@
 <?php
 
 return function(League\Container\Container $container) {
-    $container->addShared('twig-filesystemloader', \Twig\Loader\FilesystemLoader::class)
-        ->addArgument(new \League\Container\Argument\Literal\StringArgument(VIEWS_PATH));
+    $container->add('twig-factory', \meowprd\FelinePHP\Template\TwigFactory::class)
+        ->addArgument(\meowprd\FelinePHP\Http\Session::class);
 
-    $container->addShared('twig', \Twig\Environment::class)
-        ->addArgument('twig-filesystemloader');
+    $container->addShared('twig', function() use ($container): \Twig\Environment {
+        return $container->get('twig-factory')->create();
+    });
 };

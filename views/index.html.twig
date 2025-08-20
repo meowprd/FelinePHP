@@ -1,6 +1,5 @@
 {% extends 'templates/layout.html.twig' %}
 
 {% block content %}
-    <h1>Index page</h1>
-    {{ testParam }}
+    {{ dump(session().getId()) }}
 {% endblock %}
