@@ -10,6 +10,6 @@ class IndexController extends AbstractController
     public function __construct() {}
 
     public function index(): Response {
-        return $this->render("index.html.twig");
+        return new Response('FelinePHP');
     }
 }
