@@ -2,10 +2,8 @@
 
 namespace meowprd\FelinePHP\Http;
 
-use League\Container\Container;
 use meowprd\FelinePHP\Exceptions\HttpException;
 use meowprd\FelinePHP\Http\Middleware\RequestHandlerInterface;
-use meowprd\FelinePHP\Routing\Router;
 
 /**
  * Application kernel.
