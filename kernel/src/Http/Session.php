@@ -125,6 +125,16 @@ class Session
     }
 
     /**
+     * Clear all flash session data without destroying the session.
+     *
+     * @return self Returns instance for method chaining
+     */
+    public function clearFlash(): self {
+        $_SESSION['_flash'] = [];
+        return $this;
+    }
+
+    /**
      * Set flash message for next request.
      *
      * @param string $key Flash message key

@@ -11,3 +11,4 @@ $container = require ROOT_PATH . '/config/services.php';
 $kernel = $container->get(meowprd\FelinePHP\Http\Kernel::class);
 $response = $kernel->handle($request);
 $response->send();
+$kernel->terminate($request, $response);

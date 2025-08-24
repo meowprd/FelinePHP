@@ -50,6 +50,10 @@ readonly class Kernel
         return $response;
     }
 
+    public function terminate(Request $request, Response $response): void {
+        $request->session()?->clearFlash();
+    }
+
     /**
      * Handles exceptions and converts them into HTTP responses.
      *
