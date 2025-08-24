@@ -8,12 +8,18 @@ namespace meowprd\FelinePHP\Http;
  * Provides read-only access to the PHP superglobals ($_GET, $_POST, $_FILES, $_COOKIE, $_SERVER)
  * for representing an HTTP request in an object-oriented way.
  *
- * @readonly
+ * @final
  */
-readonly class Request
+final class Request
 {
     /** @var Session $session */
     private Session $session;
+
+    /** @var mixed $routeHandler */
+    private mixed $routeHandler;
+
+    /** @var array<string, mixed> $routeVars */
+    private array $routeVars;
 
     /**
      * @param array<string, mixed> $get     HTTP GET parameters (usually from $_GET)
@@ -165,10 +171,54 @@ readonly class Request
      */
     public function session(): Session
     {
-        if ($this->session === null) {
+        if (!isset($this->session)) {
             throw new \RuntimeException('Session has not been initialized');
         }
 
         return $this->session;
+    }
+
+    /**
+     * Get route variables extracted from the URI.
+     *
+     * @return array<string, mixed> Route parameters
+     */
+    public function routeVars(): array
+    {
+        return $this->routeVars;
+    }
+
+    /**
+     * Set route variables extracted from the URI.
+     *
+     * @param array<string, mixed> $routeVars Route parameters
+     * @return self
+     */
+    public function setRouteVars(array $routeVars): self
+    {
+        $this->routeVars = $routeVars;
+        return $this;
+    }
+
+    /**
+     * Get the route handler callable.
+     *
+     * @return mixed Route handler (callable or controller specification)
+     */
+    public function routeHandler(): mixed
+    {
+        return $this->routeHandler;
+    }
+
+    /**
+     * Set the route handler callable.
+     *
+     * @param mixed $routeHandler Route handler (callable or controller specification)
+     * @return self
+     */
+    public function setRouteHandler(mixed $routeHandler): self
+    {
+        $this->routeHandler = $routeHandler;
+        return $this;
     }
 }

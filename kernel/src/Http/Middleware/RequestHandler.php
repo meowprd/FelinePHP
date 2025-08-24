@@ -3,6 +3,7 @@
 namespace meowprd\FelinePHP\Http\Middleware;
 
 use League\Container\Container;
+use meowprd\FelinePHP\Http\Middleware\Handlers\InjectRouteMiddlewares;
 use meowprd\FelinePHP\Http\Middleware\Handlers\RouterDispatch;
 use meowprd\FelinePHP\Http\Middleware\Handlers\StartSession;
 use meowprd\FelinePHP\Http\Request;
@@ -23,6 +24,7 @@ class RequestHandler implements RequestHandlerInterface
      */
     private array $middleware = [
         StartSession::class,
+        InjectRouteMiddlewares::class,
         RouterDispatch::class
     ];
 
