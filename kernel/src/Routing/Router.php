@@ -11,6 +11,7 @@ use meowprd\FelinePHP\Exceptions\Http\RouteNotFoundException;
 use meowprd\FelinePHP\Http\Request;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
+use Rakit\Validation\Validator;
 use function FastRoute\simpleDispatcher;
 
 /**
@@ -39,7 +40,7 @@ class Router
      * @throws ContainerExceptionInterface     If the container fails to resolve a dependency.
      * @throws NotFoundExceptionInterface      If a required service is not found in the container.
      */
-    public function dispatch(Request $request, Container $container): array
+    public function dispatch(Request $request, Container $container, Validator $validator): array
     {
         [$handler, $vars] = $this->extractRouteInfo($request);
 
@@ -49,6 +50,7 @@ class Router
             if(is_subclass_of($controller, AbstractController::class)) {
                 $controller->setContainer($container);
                 $controller->setRequest($request);
+                $controller->setValidator($validator);
             }
             $handler = [$controller, $method];
         }

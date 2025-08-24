@@ -5,6 +5,7 @@ namespace meowprd\FelinePHP\Controller;
 use meowprd\FelinePHP\Http\Request;
 use meowprd\FelinePHP\Http\Response;
 use Psr\Container\ContainerInterface;
+use Rakit\Validation\Validator;
 use Twig\Environment;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
@@ -28,6 +29,11 @@ abstract class AbstractController
     protected ?Request $request = null;
 
     /**
+     * @var Validator|null Validator instance
+     */
+    protected ?Validator $validator = null;
+
+    /**
      * Sets the dependency injection container.
      *
      * @param ContainerInterface $container The container instance
@@ -47,6 +53,18 @@ abstract class AbstractController
     public function setRequest(Request $request): void
     {
         $this->request = $request;
+    }
+
+    /**
+     * Sets the HTTP request instance.
+     *
+     * @param Validator $validator The request instance
+     * @return void
+     */
+    public function setValidator(Validator $validator): void
+    {
+        $this->validator = $validator;
+
     }
 
     /**
